@@ -60,7 +60,6 @@ def main():
     old = read_all_file('intervals.md')
     result = merge_solutions(old, new)
     write_to_md('intervals.md', result)
-    print("Hello")
 
 
 if __name__ == "__main__":
