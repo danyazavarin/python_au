@@ -26,17 +26,17 @@ def prepare_body(pull, comment):
 
 
 def check_prefixes(title):
-    errors = ''
+    comments = ''
     action = title.split()[1]
     group = title.split('-')[1].split()[0]
     prefix = title.split('-')[0]
     if not prefix in PREFIX:
-        errors += "Prefix must be one of the following {}.\n".format(PREFIX)
+        comments += "Prefix must be one of the following {}.\n".format(PREFIX)
     if not group in GROUP:
-        errors += "Group must be one of the following {}. \n".format(GROUP)
+        comments += "Group must be one of the following {}. \n".format(GROUP)
     if not action in ACTION:
-        errors += "Action must be on of the following {}. \n".format(ACTION)
-    return errors
+        comments += "Action must be on of the following {}. \n".format(ACTION)
+    return comments
 
 
 def get_all_user_prs(user_login, repo_name, pr_state): 
@@ -50,10 +50,10 @@ def get_all_pr_commits(pr):
     return all_pr_commits
 
 
-def send_pr_comment(pr, errors):
+def send_pr_comment(pr, comment):
     response = requests.post(pr['url']+'/comments', 
                       headers = prepare_headers(), 
-                      json = prepare_body(pr, errors))
+                      json = prepare_body(pr, comment))
     print(response.json())
     print(response.status_code)
 
@@ -64,22 +64,22 @@ def get_last_commit_date(pull):
 
 
 def get_last_comment_date(pull):
-  commentpg = requests.get(pull["review_comments_url"], headers = prepare_headers())
-  if len(commentpg.json()) > 0:
-    return commentpg.json()[-1]["created_at"]
+  comments = requests.get(pull["review_comments_url"], headers = prepare_headers())
+  if len(comments.json()) > 0:
+    return comments.json()[-1]["created_at"]
   return "0000-00-00T00:00:00Z"
 
 
 def verify_pr(pr):
-    errors = ''
+    comment = ''
     all_pr_commits = get_all_pr_commits(pr)
     last_commit_date = get_last_commit_date(pr)
     last_comment_date = get_last_comment_date(pr)
     if last_comment_date != "0000-00-00T00:00:00Z" and last_commit_date > last_comment_date:
       for commit in all_pr_commits:
-        errors += check_prefixes(commit['message'])
-      if len(errors) > 0:
-        send_pr_comment(pr, '\n\n'.join(errors))  
+        comment += check_prefixes(commit['message'])
+      if len(comment) > 0:
+        send_pr_comment(pr, '\n\n'.join(comment))  
         
 
 
