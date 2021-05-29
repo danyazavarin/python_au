@@ -12,7 +12,7 @@ def prepare_headers():
     return {
       'Authorization': 'Token {}'.format(TOKEN),
       'Content-Type': "application/json"
-      'Accept': "application/vnd.github.v3+json
+      'Accept': "application/vnd.github.v3+json"
     }
     
 
